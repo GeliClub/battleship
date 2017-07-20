@@ -145,8 +145,10 @@ function battleship() {
 
 			// re-position camera: camera must be already present when html loads
 			var camera = document.getElementById('camera');
-			camera.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + m_ocean.z);
+			//camera.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + m_ocean.z);
+			camera.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + (m_ocean.z+(1.5*m_ocean.x)));
 			camera.setAttribute('camera', 'userHeight: ' + m_Constants.CameraYOffset);
+			camera.setAttribute('rotation', -Math.atan(m_Constants.CameraYOffset/(m_ocean.z+m_ocean.x)));
 			
 			// Generate Map
 			// TODO: Possible edge cases with the map edge not being big enough
