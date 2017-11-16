@@ -11,6 +11,8 @@ firebase.initializeApp(config);
 
 var database = firebase.database();
 
+var test;
+
 function battleship() {
 	
 	// private
@@ -30,32 +32,63 @@ function battleship() {
 	var m_ships = []; // stores formatted json of ship initialization
 	var m_chain = []; // stores chainable actions in a turn
 	var m_entity = {}; // object with id to html dom element of ships
+	
+	var m_states = {
+		past: [],
+		present: {},
+		future: []
+	};
 
-	var m_test = 0;
-
+	
 	var m_ocean; 
+
+	function getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+		var results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
 
 	// public
 	var app = {
 
 		init: () => {
 			// default access of data when there are no connectivity
-			m_input = {"ships": input.init.ships, "turns": input.turns, "ocean": input.init.map};
-			app.preprocess(m_input);
+			var code = getParameterByName('code');
+			var ref = database.ref('davy-jones-locker').child(code);
+			// console.log(code, ref);
+			ref.once('value', (res) => {
+				m_input = {
+					"ships": res.val().init.ships,
+					"turns": res.val().turns,
+					"ocean": res.val().init.map
+				};
+			}, (err) => {
+				console.warn("Unknown URL Code: "+code+", using default input");
+				m_input = {
+					"ships": input.init.ships, 
+					"turns": input.turns, 
+					"ocean": input.init.map
+				};
+			}).then(() => {
+				app.preprocess(m_input);
 
-			var doc = document.getElementById('scene');
-			var track = document.createElement('a-curve');
-			track.setAttribute('id', 'track');
-			track.setAttribute('type', 'Line');
-			doc.appendChild(track);
+				var doc = document.getElementById('scene');
+				var track = document.createElement('a-curve');
+				track.setAttribute('id', 'track');
+				track.setAttribute('type', 'Line');
+				doc.appendChild(track);
 
-			app.render(m_ships);
+				// begin simulation
+				// app.render(m_ships);
 
-			setTimeout(() => {
-				app.simulate();
-			}, 10000);
-			// call function to wait a bit before starting simulation
-			//app.simulate();
+				// setTimeout(() => {
+				// 	app.simulate();
+				// }, 10000);
+			});
 		},
 
 		preprocess: (data) => {
