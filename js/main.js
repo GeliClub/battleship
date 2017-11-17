@@ -17,6 +17,7 @@ function battleship() {
 	
 	// private
 	var m_Constants = {
+		GridScale: 4, 
 		CameraYOffset: 8,
 		OceanYOffset: 0,
 		OceanPadding: 10,
@@ -56,51 +57,70 @@ function battleship() {
 	var app = {
 
 		init: () => {
+			let startSim = () => {
+					app.preprocess(m_input);
+
+					var doc = document.getElementById('scene');
+					var track = document.createElement('a-curve');
+					track.setAttribute('id', 'track');
+					track.setAttribute('type', 'Line');
+					doc.appendChild(track);
+					
+					// begin simulation
+					app.render(m_ships);
+
+					setTimeout(() => {
+						app.simulate();
+					}, 10000);
+			}
+
 			// default access of data when there are no connectivity
 			var code = getParameterByName('code');
-			var ref = database.ref('davy-jones-locker').child(code);
-			// console.log(code, ref);
-			ref.once('value', (res) => {
-				m_input = {
-					"ships": res.val().init.ships,
-					"turns": res.val().turns,
-					"ocean": res.val().init.map
-				};
-			}, (err) => {
-				console.warn("Unknown URL Code: "+code+", using default input");
+			if (code) {
+				var ref = database.ref('davy-jones-locker').child(code);
+				// console.log(code, ref);
+				ref.once('value', (res) => {
+					m_input = {
+						"ships": res.val().init.ships,
+						"turns": res.val().turns,
+						"ocean": res.val().init.map
+					};
+				}, (err) => {
+					console.warn("Unknown URL Code: "+code+", using default input");
+					m_input = {
+						"ships": input.init.ships, 
+						"turns": input.turns, 
+						"ocean": input.init.map
+					};
+				}).then(() => {
+
+					startSim();
+
+				});
+			} else {
+				console.log("Missing URL Code, using default input");
 				m_input = {
 					"ships": input.init.ships, 
 					"turns": input.turns, 
 					"ocean": input.init.map
 				};
-			}).then(() => {
-				app.preprocess(m_input);
 
-				var doc = document.getElementById('scene');
-				var track = document.createElement('a-curve');
-				track.setAttribute('id', 'track');
-				track.setAttribute('type', 'Line');
-				doc.appendChild(track);
+				startSim();
+			}
 
-				// begin simulation
-				// app.render(m_ships);
 
-				// setTimeout(() => {
-				// 	app.simulate();
-				// }, 10000);
-			});
 		},
 
 		preprocess: (data) => {
-			var translate = (d) => {
+			var scale = (d, s) => {
 				var res = d;
 				if (res.hasOwnProperty("atX") && res.hasOwnProperty("atY")) {
-					res['atX'] = 4*d.atX;
-					res['atZ'] = 4*d.atY; // make sure to move the y property before overriding it
+					res['atX'] = s*d.atX;
+					res['atZ'] = s*d.atY; // make sure to move the y property before overriding it
 					res['atY'] = m_Constants.ShipYOffset;
 				}
-				res.x = 4*d.x;
-				res.z = 4*d.y; // make sure to move the y property before overriding it
+				res.x = s*d.x;
+				res.z = s*d.y; // make sure to move the y property before overriding it
 				res.y = m_Constants.ShipYOffset;
 				return res;
 			};
@@ -115,9 +135,9 @@ function battleship() {
 			//             "depth": (4*data.ocean.y)+m_Constants.OceanPadding, 
 			//             "density": Math.min(3*data.ocean.x, 3*data.ocean.y)+m_Constants.OceanPadding
 			//         };
-			m_ocean = { "x": ((4*Math.floor(data.ocean.x/2))-2),
+			m_ocean = { "x": ((m_Constants.GridScale*Math.floor(data.ocean.x/2))-2),
 						"y": m_Constants.OceanYOffset, 
-						"z": ((4*Math.floor(data.ocean.y/2))),
+						"z": ((m_Constants.GridScale*Math.floor(data.ocean.y/2))),
 						"width": 200, 
 						"depth": 200,
 						"density": 120,
@@ -126,7 +146,7 @@ function battleship() {
 			console.log(data);
 			// preprocess initial ship information
 			data.ships.forEach((entry) => {
-				m_ships.push(translate(entry));
+				m_ships.push(scale(entry, m_Constants.GridScale));
 			});
 
 			// preprocess actions and turns information
@@ -137,22 +157,22 @@ function battleship() {
 						break;
 
 					if (actions.length === 0) {
-						actions.push(translate(data.turns[index]));
+						actions.push(scale(data.turns[index], m_Constants.GridScale));
 						index++;
 					}
 					// Ship id and action type has to be the same to be considered a chain-able action
 					else if (actions[0].id === data.turns[index].id && actions[0].type === data.turns[index].type) {
 						if (actions[0].type === "MOVE") {
-							actions.push(translate(data.turns[index]));
+							actions.push(scale(data.turns[index], m_Constants.GridScale));
 							index++;
 						}
 						// Firing must be at the same coordinates to be considered a chain-able action
-						else if (actions[0].type === "FIRE" && actions[0].atX === 4*(data.turns[index].atX) && actions[0].atY === 4*(data.turns[index].atY)) {
-							actions.push(translate(data.turns[index]));
+						else if (actions[0].type === "FIRE" && actions[0].atX === m_Constants.GridScale*(data.turns[index].atX) && actions[0].atY === m_Constants.GridScale*(data.turns[index].atY)) {
+							actions.push(scale(data.turns[index], m_Constants.GridScale));
 							index++;
 						}
 						else if(actions[0].type === "SINK") {
-							actions.push(translate(data.turns[index]));
+							actions.push(scale(data.turns[index], m_Constants.GridScale));
 							index++;
 						}
 						else {

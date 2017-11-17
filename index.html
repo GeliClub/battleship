@@ -28,57 +28,72 @@
 	<!-- A Frame Lerp Component -->
 	<!-- <script src="https://unpkg.com/aframe-lerp-component/dist/aframe-lerp-component.min.js"></script> -->
 
-	<script type="text/javascript" src="./js/input.js">
+	<script type="text/javascript" src="./js/input.js"></script>
 
-	</script>
+	<link rel="stylesheet" type="text/css" href="./css/pure-drawer.css"/>
 
 </head>
 <body>
-	<a-scene id="scene" fog="type: exponential; color: #FFF; density: 0.03;">
+	<div class="pure-container" data-effect="pure-effect-scaleRotate">
+    	<input type="checkbox" id="pure-toggle-left" class="pure-toggle" data-toggle="left"/>
+		<!-- Hamburger Icon -->
+    	<label id="toggler" class="pure-toggle-label" for="pure-toggle-left" data-toggle-label="left"><span class="pure-toggle-icon"></span></label>
+    	<!-- Sliding Menu -->
+		<nav class="pure-drawer" data-position="left">
+			<div style="padding: 100px 20px; margin: 0;">
+				<h1>Content</h1>
+			</div>
+		</nav>
+		<!-- Page Content -->
+		<div class="pure-pusher-container">
+			<div class="pure-pusher"> <!-- Menu Pusher Wrapper -->
+			<a-scene id="scene" fog="type: exponential; color: #FFF; density: 0.03;">
 
-		<a-assets>
-			<!-- Ship model -->
-			<!-- <a-asset-item id="ship" src="./assets/ship.dae"></a-asset-item> -->
-			<a-asset-item id="ship" src="./assets/ship-model.dae"></a-asset-item>
-			<a-asset-item id="play" src="./assets/Play_Regular.json"></a-asset-item>
+				<a-assets>
+					<!-- Ship model -->
+					<!-- <a-asset-item id="ship" src="./assets/ship.dae"></a-asset-item> -->
+					<a-asset-item id="ship" src="./assets/ship-model.dae"></a-asset-item>
+					<a-asset-item id="play" src="./assets/Play_Regular.json"></a-asset-item>
 
-			<a-asset-item id="shipHull" src="./assets/shipHull.obj"></a-asset-item>
-			<a-asset-item id="shipMount" src="./assets/shipMount.obj"></a-asset-item>
-			<a-asset-item id="shipCannon" src="./assets/shipCannon.obj"></a-asset-item>
-			<!-- Possible Ship classes 
-				+5 Hull: Aircraft Carrier
-				+5 Firepower: Torpedo Ship
-				+5 Speed: Cannon Boat
-				+5 Range: Missile Submarine
-				Dummies: Rafts
-			 -->
-			<!-- Debug model, checks if the grid size is correct -->
-			<a-asset-item id="box" src="./assets/debug.dae"></a-asset-item>
-		</a-assets>
+					<a-asset-item id="shipHull" src="./assets/shipHull.obj"></a-asset-item>
+					<a-asset-item id="shipMount" src="./assets/shipMount.obj"></a-asset-item>
+					<a-asset-item id="shipCannon" src="./assets/shipCannon.obj"></a-asset-item>
+					<!-- Possible Ship classes 
+						+5 Hull: Aircraft Carrier
+						+5 Firepower: Torpedo Ship
+						+5 Speed: Cannon Boat
+						+5 Range: Missile Submarine
+						Dummies: Rafts
+					 -->
+					<!-- Debug model, checks if the grid size is correct -->
+					<a-asset-item id="box" src="./assets/debug.dae"></a-asset-item>
+				</a-assets>
 
-		<!-- Camera Spawn CANNOT be dynamically spawned -->
-		<a-entity id="camera" camera="userHeight: 4" universal-controls></a-entity>
+				<!-- Camera Spawn CANNOT be dynamically spawned -->
+				<a-entity id="camera" camera="userHeight: 4" universal-controls></a-entity>
 
-		<!-- Dynamically Spawned in for objects below... -->
-		<!-- Ships-->
-<!-- 		<a-curve id="track1">
-			<a-curve-point position="5 0 12"></a-curve-point>
-			<a-curve-point position="12 0 12"></a-curve-point>
-			<a-curve-point position="12 0 3"></a-curve-point>
-		</a-curve> -->
-<!-- 		<a-draw-curve curveref="#track1" material="shader: line; color: blue;"></a-draw-curve>
-		<a-collada-model alongpath="curve: #track1; rotate: true; constraint: 0 0 -1; delay: 1000; dur: 5000;" position="0 0 0" rotation="0 0 0" src="#ship"></a-collada-model> -->
-		<!-- Ocean -->
-		<!-- <a-ocean position="0 0 0" width="50" depth="50" density="40"></a-ocean> -->
-		<!-- Dynamically Spawned in for objects above... -->
+				<!-- Dynamically Spawned in for objects below... -->
+				<!-- Ships-->
+		<!-- 		<a-curve id="track1">
+					<a-curve-point position="5 0 12"></a-curve-point>
+					<a-curve-point position="12 0 12"></a-curve-point>
+					<a-curve-point position="12 0 3"></a-curve-point>
+				</a-curve> -->
+		<!-- 		<a-draw-curve curveref="#track1" material="shader: line; color: blue;"></a-draw-curve>
+				<a-collada-model alongpath="curve: #track1; rotate: true; constraint: 0 0 -1; delay: 1000; dur: 5000;" position="0 0 0" rotation="0 0 0" src="#ship"></a-collada-model> -->
+				<!-- Ocean -->
+				<!-- <a-ocean position="0 0 0" width="50" depth="50" density="40"></a-ocean> -->
+				<!-- Dynamically Spawned in for objects above... -->
 
 
-		<!-- Lighting -->
-		<a-entity position="0 -5 0" light="type: hemisphere; color: #AAA; groundColor: #000000; intensity: 0.9;"></a-entity>
-		<a-entity position="0 5 0" light="type: ambient; color: #DC8874; intensity: 0.5;"></a-entity>
+				<!-- Lighting -->
+				<a-entity position="0 -5 0" light="type: hemisphere; color: #AAA; groundColor: #000000; intensity: 0.9;"></a-entity>
+				<a-entity position="0 5 0" light="type: ambient; color: #DC8874; intensity: 0.5;"></a-entity>
 
-	</a-scene>
-
+			</a-scene>
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>
