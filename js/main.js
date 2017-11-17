@@ -81,6 +81,7 @@ function battleship() {
 				// console.log(code, ref);
 				ref.once('value', (res) => {
 					m_input = {
+						"ids": res.val().init.ships.map((s) => { return s.id }),
 						"ships": res.val().init.ships,
 						"turns": res.val().turns,
 						"ocean": res.val().init.map
@@ -88,6 +89,7 @@ function battleship() {
 				}, (err) => {
 					console.warn("Unknown URL Code: "+code+", using default input");
 					m_input = {
+						"ids": input.init.ships.map((s) => { return s.id }),
 						"ships": input.init.ships, 
 						"turns": input.turns, 
 						"ocean": input.init.map
@@ -100,6 +102,7 @@ function battleship() {
 			} else {
 				console.log("Missing URL Code, using default input");
 				m_input = {
+					"ids": input.init.ships.map((s) => { return s.id }),
 					"ships": input.init.ships, 
 					"turns": input.turns, 
 					"ocean": input.init.map
@@ -113,6 +116,34 @@ function battleship() {
 
 		reducer: (state, action) => {
 			// Converts actions into state tree starting from inital states and list of actions
+			var snapshot = {
+				"state": state,
+				"action": undefined
+			};
+
+			switch(action.type) {
+				case: "MOVE":
+					snapshot.action = action;
+					var idx = 0;
+					for (var i in m_input.ids) {
+						if (m_input.ids[i] === action.id)
+							break;
+						idx++;
+					} // one-to-one mapping, so there should be exactly 1 value
+
+					// need to update to account for multi-step movements in one turn
+					if (action.direction === "North") {
+						snapshot.state[idx].z -= m_Constants.GridScale;
+					}
+					else if (action.direction === "South") {
+						snapshot.state[idx].z += m_Constants.GridScale;
+					}
+
+					return snapshot;
+
+				default:
+					return snapshot;
+			}
 		},
 
 		preprocess: (data) => {
@@ -487,8 +518,11 @@ function battleship() {
 
 		getOcean: () => {
 			return m_ocean;
-		}
+		},
 
+		getInput: () => {
+			return m_input;
+		}
 
 	}
 
