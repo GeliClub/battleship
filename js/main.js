@@ -67,11 +67,11 @@ function battleship() {
 					doc.appendChild(track);
 					
 					// begin simulation
-					app.render(m_ships);
+					// app.render(m_ships);
 
-					setTimeout(() => {
-						app.simulate();
-					}, 10000);
+					// setTimeout(() => {
+					// 	app.simulate();
+					// }, 10000);
 			}
 
 			// default access of data when there are no connectivity
@@ -109,6 +109,10 @@ function battleship() {
 			}
 
 
+		},
+
+		reducer: (state, action) => {
+			// Converts actions into state tree starting from inital states and list of actions
 		},
 
 		preprocess: (data) => {

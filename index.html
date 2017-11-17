@@ -35,8 +35,8 @@
 </head>
 <body>
 	<div class="pure-container" data-effect="pure-effect-scaleRotate">
-    	<input type="checkbox" id="pure-toggle-left" class="pure-toggle" data-toggle="left"/>
 		<!-- Hamburger Icon -->
+    	<input type="checkbox" id="pure-toggle-left" class="pure-toggle" data-toggle="left"/>
     	<label id="toggler" class="pure-toggle-label" for="pure-toggle-left" data-toggle-label="left"><span class="pure-toggle-icon"></span></label>
     	<!-- Sliding Menu -->
 		<nav class="pure-drawer" data-position="left">
@@ -93,6 +93,8 @@
 			</a-scene>
 			</div>
 		</div>
+		<!-- Darken Content while in menu mode -->
+		<label class="pure-overlay" for="pure-toggle-left" data-overlay="left"></label>
 	</div>
 	<script type="text/javascript" src="./js/main.js"></script>
 </body>
