@@ -122,7 +122,7 @@ function battleship() {
 			};
 
 			switch(action.type) {
-				case: "MOVE":
+				case "MOVE":
 					snapshot.action = action;
 					var idx = 0;
 					for (var i in m_input.ids) {
