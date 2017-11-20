@@ -50,7 +50,15 @@ body {
   color: #1fc08e;
 }
 
+.pure-toggle-label:hover {
+  opacity:1;
+  -webkit-transition:opacity 2s ease-out;
+  -moz-transition:opacity 2s ease-out;
+  -o-transition:opacity 2s ease-out; 
+}
+
 .pure-toggle-label {
+  opacity: 0;
   display: none;
   cursor: pointer;
   display: block;
