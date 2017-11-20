@@ -50,13 +50,6 @@ body {
   color: #1fc08e;
 }
 
-.pure-toggle-label:hover {
-  opacity:1;
-  -webkit-transition:opacity 2s ease-out;
-  -moz-transition:opacity 2s ease-out;
-  -o-transition:opacity 2s ease-out; 
-}
-
 .pure-toggle-label {
   opacity: 0;
   display: none;
@@ -83,6 +76,10 @@ body {
 .pure-toggle-label:hover {
   border-color: #1fc08e;
   color: #1fc08e;
+  opacity: 1;
+/*  -webkit-transition:opacity 2s ease-out;
+  -moz-transition:opacity 2s ease-out;
+  -o-transition:opacity 2s ease-out; */
 }
 
 .pure-toggle-label:hover .pure-toggle-icon,
@@ -154,6 +151,8 @@ body {
 .pure-toggle[data-toggle='top']:checked ~ .pure-toggle-label[data-toggle-label='top'] {
   border-color: #1fc08e;
   color: #1fc08e;
+  /* Override the opacity:0; when not hovered but checked so the UI can be found and uncheck */
+  opacity: 1; 
 }
 
 .pure-toggle[data-toggle='left']:checked ~ .pure-toggle-label[data-toggle-label='left'] .pure-toggle-icon,
