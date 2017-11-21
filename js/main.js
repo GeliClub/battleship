@@ -16,7 +16,7 @@ var test;
 function battleship() {
 	
 	// private
-	var m_Constants = {
+	let m_Constants = {
 		GridScale: 4, 
 		CameraYOffset: 8,
 		OceanYOffset: 0,
@@ -53,7 +53,7 @@ function battleship() {
 	}
 
 	function startSimulation(inputs) {
-		app.preprocess(inputs);
+		let data = app.preprocess(inputs, m_Constants);
 
 		var doc = document.getElementById('scene');
 		var track = document.createElement('a-curve');
@@ -62,7 +62,7 @@ function battleship() {
 		doc.appendChild(track);
 		
 		// begin simulation
-		// app.render(m_ships);
+		// app.render(data);
 
 		// setTimeout(() => {
 		// 	app.simulate();
@@ -165,14 +165,15 @@ function battleship() {
 		actionChain: (data) => {
 			let result = [];
 			data.map((entry) => {
-				if (result) { 
-					let last = result[result.length-1];
+				if (result && result.length > 0) { 
+					let last = result[result.length-1].actions;
 					// action can be chained if they are of the same type from the same ship id
-					if (last.id === entry.id && last.type === entry.type && 
-						((last.type === "MOVE") || 
-						 (last.type === "FIRE" && last.atX === entry.atX && last.atY === entry.atY) )) {
+					// console.log("Comparing: ", result[result.length-1], last, entry);
+					if (last[0].id === entry.id && last[0].type === entry.type && 
+						((last[0].type === "MOVE") || 
+						 (last[0].type === "FIRE" && last[0].atX === entry.atX && last[0].atY === entry.atY) )) {
 						// Movement can be chained and firing at the same location can be chained
-						last.actions.push(entry);
+						last.push(entry);
 					} 
 					else {
 						result.push({
@@ -188,10 +189,13 @@ function battleship() {
 					});
 				}
 			});
+			console.log(result);
 			return result;
 		},
 
-		preprocess: (data) => {
+		preprocess: (data, OPTION) => {
+			let result = {};
+			console.log(data);
 			var scale = (d, s) => {
 				var res = d;
 				if (res.hasOwnProperty("atX") && res.hasOwnProperty("atY")) {
@@ -215,61 +219,31 @@ function battleship() {
 			//             "depth": (4*data.ocean.y)+m_Constants.OceanPadding, 
 			//             "density": Math.min(3*data.ocean.x, 3*data.ocean.y)+m_Constants.OceanPadding
 			//         };
-			m_ocean = { "x": ((m_Constants.GridScale*Math.floor(data.ocean.x/2))-2),
-						"y": m_Constants.OceanYOffset, 
-						"z": ((m_Constants.GridScale*Math.floor(data.ocean.y/2))),
-						"width": 200, 
-						"depth": 200,
-						"density": 120,
-					};
+			// m_ocean = { "x": ((OPTION.GridScale*Math.floor(data.ocean.x/2))-2),
+			// 			"y": OPTION.OceanYOffset, 
+			// 			"z": ((OPTION.GridScale*Math.floor(data.ocean.y/2))),
+			// 			"width": 200, 
+			// 			"depth": 200,
+			// 			"density": 120,
+			// 		};
+			result.map = {
+				"x": ((OPTION.GridScale*Math.floor(data.ocean.x/2))-2),
+				"y": OPTION.OceanYOffset, 
+				"z": ((OPTION.GridScale*Math.floor(data.ocean.y/2))),
+				"width": 200, 
+				"depth": 200,
+				"density": 120
+			};
 
 			console.log(data);
-			// preprocess initial ship information
-			// app.transform(data.ships, m_Constants.GridScale, m_Constants);
-			data.ships.forEach((entry) => {
-				m_ships.push(scale(entry, m_Constants.GridScale));
-			});
-
+			// scale up ship's initial locations 
+			result.ships = app.transform(data.ships, OPTION.GridScale, OPTION);
+			// scale up action locations
+			let tmp = app.transform(data.turns, OPTION.GridScale, OPTION);
 			// preprocess actions and turns information
-			while(index < data.turns.length) {
-				var chain = true;
-				while(chain) {
-					if (index === data.turns.length)
-						break;
-
-					if (actions.length === 0) {
-						actions.push(scale(data.turns[index], m_Constants.GridScale));
-						index++;
-					}
-					// Ship id and action type has to be the same to be considered a chain-able action
-					else if (actions[0].id === data.turns[index].id && actions[0].type === data.turns[index].type) {
-						if (actions[0].type === "MOVE") {
-							actions.push(scale(data.turns[index], m_Constants.GridScale));
-							index++;
-						}
-						// Firing must be at the same coordinates to be considered a chain-able action
-						else if (actions[0].type === "FIRE" && actions[0].atX === m_Constants.GridScale*(data.turns[index].atX) && actions[0].atY === m_Constants.GridScale*(data.turns[index].atY)) {
-							actions.push(scale(data.turns[index], m_Constants.GridScale));
-							index++;
-						}
-						else if(actions[0].type === "SINK") {
-							actions.push(scale(data.turns[index], m_Constants.GridScale));
-							index++;
-						}
-						else {
-							chain = false;
-						}
-					}
-					else {
-						chain = false;
-					}
-				}
-				// add action chain to variable
-				m_chain.push({"type": actions[0].type, "actions": actions});
-				// reset chain actions
-				actions = [];
-			}
-			console.log(m_chain);
+			result.turns = app.actionChain(tmp);
+			console.log(result);
+			return result;
 		},
 
 		// Displays the ocean, and ships
