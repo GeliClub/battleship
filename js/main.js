@@ -160,6 +160,37 @@ function battleship() {
 			return result;
 		},
 
+		// TODO: Write Test Case
+		// Map a list of atmoic actions into a chain-able list of actions for smooth animation and movements 
+		actionChain: (data) => {
+			let result = [];
+			data.map((entry) => {
+				if (result) { 
+					let last = result[result.length-1];
+					// action can be chained if they are of the same type from the same ship id
+					if (last.id === entry.id && last.type === entry.type && 
+						((last.type === "MOVE") || 
+						 (last.type === "FIRE" && last.atX === entry.atX && last.atY === entry.atY) )) {
+						// Movement can be chained and firing at the same location can be chained
+						last.actions.push(entry);
+					} 
+					else {
+						result.push({
+							type: entry.type,
+							actions: [entry]
+						});
+					}
+				} 
+				else { // if result is empty, initial case
+					result.push({
+						type: entry.type,
+						actions: [entry]
+					});
+				}
+			});
+			return result;
+		},
+
 		preprocess: (data) => {
 			var scale = (d, s) => {
 				var res = d;
