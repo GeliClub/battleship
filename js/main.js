@@ -62,11 +62,12 @@ function battleship() {
 		doc.appendChild(track);
 		
 		// begin simulation
-		// app.render(data);
+		console.log(data);
+		app.render(data);
 
-		// setTimeout(() => {
-		// 	app.simulate();
-		// }, 10000);
+		setTimeout(() => {
+			app.simulate();
+		}, 10000);
 	}
 
 	// public
@@ -233,28 +234,28 @@ function battleship() {
 
 		// Displays the ocean, and ships
 		// TODO: check the edge cases with the map edges/sizes
-		render: (shipData) => {
+		render: (data, OPTION) => {
 			var doc = document.getElementById('scene'); // <a-scene> reference
 
 			// re-position camera: camera must be already present when html loads
 			var camera = document.getElementById('camera');
-			//camera.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + m_ocean.z);
-			camera.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + (m_ocean.z+(1.5*m_ocean.x)));
+			//camera.setAttribute('position', data.ocean.x + " " + data.ocean.y + " " + data.ocean.z);
+			camera.setAttribute('position', data.map.x + " " + data.map.y + " " + (data.map.z+(1.5*data.map.x)));
 			camera.setAttribute('camera', 'userHeight: ' + m_Constants.CameraYOffset);
-			camera.setAttribute('rotation', -Math.atan(m_Constants.CameraYOffset/(m_ocean.z+m_ocean.x)));
+			camera.setAttribute('rotation', -Math.atan(m_Constants.CameraYOffset/(data.map.z+data.map.x)));
 			
 			// Generate Map
 			// TODO: Possible edge cases with the map edge not being big enough
 			var map = document.createElement('a-ocean');
 
-			map.setAttribute('position', m_ocean.x + " " + m_ocean.y + " " + m_ocean.z);
-			map.setAttribute('width', String(m_ocean.width));
-			map.setAttribute('depth', String(m_ocean.depth));
-			map.setAttribute('density', String(m_ocean.density));
+			map.setAttribute('position', data.map.x + " " + data.map.y + " " + data.map.z);
+			map.setAttribute('width', String(data.map.width));
+			map.setAttribute('depth', String(data.map.depth));
+			map.setAttribute('density', String(data.map.density));
 			doc.appendChild(map);
 
 			// Spawn Ships
-			shipData.forEach((entry) => {
+			data.ships.forEach((entry) => {
 				var shipHull = document.createElement('a-entity');
 				var shipMount = document.createElement('a-entity');
 				var shipCannon = document.createElement('a-entity');
