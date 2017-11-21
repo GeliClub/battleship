@@ -141,7 +141,24 @@ function battleship() {
 			}
 		},
 
-
+		// TODO: Write Test Case
+		// Map the 1x1 coordinate system into a given scale, e.g. 4x4 coordinate system
+		transform: (data, scale, OPTION) => {
+			console.log("transform: ", data);
+			let result = data.map((entry) => {
+				if (entry.hasOwnProperty("atX") && entry.hasOwnProperty("atY")) {
+					entry.atX = scale * entry.atX;
+					entry.atZ = scale * entry.atY; // 3D uses the xz plane as part of the ground
+					entry.atY = OPTION.ShipYOffset;
+				}
+				entry.x = scale * entry.x;
+				entry.z = scale * entry.y; // 3D uses the xz plane as part of the ground
+				entry.y = OPTION.ShipYOffset;
+				return entry;
+			});
+			// console.log(result);
+			return result;
+		},
 
 		preprocess: (data) => {
 			var scale = (d, s) => {
