@@ -63,11 +63,11 @@ function battleship() {
 		
 		// begin simulation
 		console.log(data);
-		app.render(data);
+		// app.render(data);
 
-		setTimeout(() => {
-			app.simulate(data);
-		}, 10000);
+		// setTimeout(() => {
+		// 	app.simulate(data);
+		// }, 10000);
 	}
 
 	// public
@@ -110,36 +110,49 @@ function battleship() {
 			}
 		},
 
-		reducer: (state, action) => {
+		reducer: (tree, action, OPTION) => {
 			// Converts actions into state tree starting from inital states and list of actions
 			var snapshot = {
-				"state": state,
-				"action": undefined
+				"state": tree.state,
+				"next": action
 			};
+			test = tree;
+			console.log(tree);
+			// console.log(tree.state);
+			// console.log(tree.state.map);
 
-			switch(action.type) {
-				case "MOVE":
-					snapshot.action = action;
-					var idx = 0;
-					for (var i in m_input.ids) {
-						if (m_input.ids[i] === action.id)
-							break;
-						idx++;
-					} // one-to-one mapping, so there should be exactly 1 value
+			snapshot.state = tree.state.map((ship) => {
+				if (action.id === ship.id) {
+					switch(action.type) {
+						case "Move":
+							if (action.direction === "North") {
+								ship.z -= OPTION.GridScale;
+							}
+							else if (action.direction === "South") {
+								ship.z += OPTION.GridScale;
+							}
+							else if (action.direction === "West") {
+								ship.x -= OPTION.GridScale;
+							}
+							else if (action.direction === "East") {
+								ship.x += OPTION.GridScale;
+							}
+							return ship;
 
-					// need to update to account for multi-step movements in one turn
-					if (action.direction === "North") {
-						snapshot.state[idx].z -= m_Constants.GridScale;
+						case "Sunk":
+							ship.sunk = true;
+							return ship;
+
+						default:
+							return ship;
 					}
-					else if (action.direction === "South") {
-						snapshot.state[idx].z += m_Constants.GridScale;
-					}
+				}
+				else {
+					return ship;
+				}
+			});
 
-					return snapshot;
-
-				default:
-					return snapshot;
-			}
+			return snapshot;
 		},
 
 		// TODO: Write Test Case
@@ -219,14 +232,38 @@ function battleship() {
 			console.log(data);
 			// scale up ship's initial locations 
 			result.ships = app.transform(data.ships, OPTION.GridScale, OPTION);
-			
-			// scale up action locations
-			//let tmp = app.transform(data.turns, OPTION.GridScale, OPTION);
-			// preprocess actions and turns information
-			//result.turns = app.actionChain(tmp);
 
-			// scale up action's coordinates, aggregate chainable actions
-			result.turns = app.actionChain(app.transform(data.turns, OPTION.GridScale, OPTION));
+			// add sunk property into the inital state of the ships
+			result.ships.forEach((ship) => {
+				ship.sunk = false;
+			});
+
+			// scale up action's coordinates, then aggregate chainable actions
+			result.turns = app.actionChain( app.transform(data.turns, OPTION.GridScale, OPTION) );
+			result.turns.push({type: "END", actions: undefined}); 
+
+			console.log(result);
+			// add a state tree attribute to the result
+			result.state = {
+				past: [],
+				present: {},
+				future: []
+			};
+
+			console.log("initial state: ", result.ships);
+			let count = 0;
+
+			let currentState = {state: result.ships, next:result.turns[0]}; // initial state
+			result.turns.forEach((turn) => {
+				result.state.future.push(currentState);
+
+				// let previousState = result.state.future[result.state.future.length - 1];
+				// console.log("iteration"+count, previousState, turn);
+				currentState = app.reducer(currentState, turn, OPTION);
+				// console.log("Reducer Ouput: ", out);
+			});
+			result.state.future.reverse();
+			result.state.present = result.state.future.pop(0);
 
 			console.log(result);
 			return result;
