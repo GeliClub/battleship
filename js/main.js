@@ -66,7 +66,7 @@ function battleship() {
 		app.render(data);
 
 		setTimeout(() => {
-			app.simulate();
+			app.simulate(data);
 		}, 10000);
 	}
 
@@ -463,20 +463,20 @@ function battleship() {
 			});
 		},
 
-		simulate: () => {
-			console.log("chain: ", m_chain);
+		simulate: (data) => {
+			console.log("chain: ", data);
 			var notStop = true;
-			if (m_chain.length == 0) {
+			if (data.turns.length == 0) {
 				notStop = false;
 			}
-			var current = m_chain.shift(); // don't shift when length is zero
+			var current = data.turns.shift(); // don't shift when length is zero
 			if (current && notStop) {
 				console.log("current: ", current);
 				switch(current.type) {
 					case "MOVE":
 						app.moveShip(current.actions).then((done) => {
 							//alert("Moved " + m_chain.length + " actions left");
-							app.simulate();
+							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
@@ -484,7 +484,7 @@ function battleship() {
 					case "FIRE":
 						app.fireShip(current.actions).then((done) => {
 							//alert("Fired " + m_chain.length + " actions left");
-							app.simulate();
+							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
@@ -492,7 +492,7 @@ function battleship() {
 					case "SINK":
 						app.sinkShip(current.actions).then((done) => {
 							//alert("Sunk "+ m_chain.length + " actions left");
-							app.simulate();
+							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
