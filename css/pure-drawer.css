@@ -51,7 +51,7 @@ body {
 }
 
 .pure-toggle-label {
-  opacity: 0;
+  opacity: 0.5;
   display: none;
   cursor: pointer;
   display: block;
