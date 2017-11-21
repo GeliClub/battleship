@@ -40,7 +40,6 @@ function battleship() {
 		future: []
 	};
 
-	
 	var m_ocean; 
 
 	function getParameterByName(name, url) {
@@ -53,34 +52,33 @@ function battleship() {
 		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 
+	function startSimulation(inputs) {
+		app.preprocess(inputs);
+
+		var doc = document.getElementById('scene');
+		var track = document.createElement('a-curve');
+		track.setAttribute('id', 'track');
+		track.setAttribute('type', 'Line');
+		doc.appendChild(track);
+		
+		// begin simulation
+		// app.render(m_ships);
+
+		// setTimeout(() => {
+		// 	app.simulate();
+		// }, 10000);
+	}
+
 	// public
 	var app = {
 
 		init: () => {
-			let startSim = () => {
-					app.preprocess(m_input);
-
-					var doc = document.getElementById('scene');
-					var track = document.createElement('a-curve');
-					track.setAttribute('id', 'track');
-					track.setAttribute('type', 'Line');
-					doc.appendChild(track);
-					
-					// begin simulation
-					// app.render(m_ships);
-
-					// setTimeout(() => {
-					// 	app.simulate();
-					// }, 10000);
-			}
-
-			// default access of data when there are no connectivity
-			var code = getParameterByName('code');
+			let inputs = {};
+			let code = getParameterByName('code');
 			if (code) {
-				var ref = database.ref('davy-jones-locker').child(code);
-				// console.log(code, ref);
+				let ref = database.ref('davy-jones-locker').child(code);
 				ref.once('value', (res) => {
-					m_input = {
+					inputs = {
 						"ids": res.val().init.ships.map((s) => { return s.id }),
 						"ships": res.val().init.ships,
 						"turns": res.val().turns,
@@ -88,30 +86,27 @@ function battleship() {
 					};
 				}, (err) => {
 					console.warn("Unknown URL Code: "+code+", using default input");
-					m_input = {
+					inputs = {
 						"ids": input.init.ships.map((s) => { return s.id }),
 						"ships": input.init.ships, 
 						"turns": input.turns, 
 						"ocean": input.init.map
 					};
 				}).then(() => {
-
-					startSim();
-
+					// Start simulation after populating the inputs
+					startSimulation(inputs);
 				});
 			} else {
 				console.log("Missing URL Code, using default input");
-				m_input = {
+				inputs = {
 					"ids": input.init.ships.map((s) => { return s.id }),
 					"ships": input.init.ships, 
 					"turns": input.turns, 
 					"ocean": input.init.map
 				};
-
-				startSim();
+				// Start simulation after populating the inputs
+				startSimulation(inputs);
 			}
-
-
 		},
 
 		reducer: (state, action) => {
@@ -145,6 +140,8 @@ function battleship() {
 					return snapshot;
 			}
 		},
+
+
 
 		preprocess: (data) => {
 			var scale = (d, s) => {
@@ -180,6 +177,7 @@ function battleship() {
 
 			console.log(data);
 			// preprocess initial ship information
+			// app.transform(data.ships, m_Constants.GridScale, m_Constants);
 			data.ships.forEach((entry) => {
 				m_ships.push(scale(entry, m_Constants.GridScale));
 			});
