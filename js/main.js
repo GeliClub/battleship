@@ -125,20 +125,30 @@ function battleship() {
 				if (action.id === ship.id) {
 					switch(action.type) {
 						case "Move":
-							if (action.direction === "North") {
-								ship.z -= OPTION.GridScale;
-							}
-							else if (action.direction === "South") {
-								ship.z += OPTION.GridScale;
-							}
-							else if (action.direction === "West") {
-								ship.x -= OPTION.GridScale;
-							}
-							else if (action.direction === "East") {
-								ship.x += OPTION.GridScale;
-							}
-							return ship;
+							// iterate over all the chained actions and apply it the the state
+							// function would need to check validity in movement, which not checked in the data
+							// action.actions.forEach((a) => {
+							// 	if (a.direction === "North") {
+							// 		if (ship.z > 0)
+							// 			ship.z -= OPTION.GridScale;
+							// 	}
+							// 	else if (a.direction === "South") {
+							// 		ship.z += OPTION.GridScale;
+							// 	}
+							// 	else if (a.direction === "West") {
+							// 		if (ship.x > 0)
+							// 			ship.x -= OPTION.GridScale;
+							// 	}
+							// 	else if (a.direction === "East") {
+							// 		ship.x += OPTION.GridScale;
+							// 	}
+							// });
 
+							// shortcut, update state from the result of the last action list
+							let last = action.actions[action.actions.length-1];
+							ship.z = last.z;
+							ship.x = last.x;
+							return ship;
 						case "Sunk":
 							ship.sunk = true;
 							return ship;
