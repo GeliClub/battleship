@@ -166,6 +166,7 @@ function battleship() {
 			let result = [];
 			data.map((entry) => {
 				if (result && result.length > 0) { 
+					// result[i] will always have at least one item in its action attribute list
 					let last = result[result.length-1].actions;
 					// action can be chained if they are of the same type from the same ship id
 					// console.log("Comparing: ", result[result.length-1], last, entry);
@@ -196,20 +197,6 @@ function battleship() {
 		preprocess: (data, OPTION) => {
 			let result = {};
 			console.log(data);
-			var scale = (d, s) => {
-				var res = d;
-				if (res.hasOwnProperty("atX") && res.hasOwnProperty("atY")) {
-					res['atX'] = s*d.atX;
-					res['atZ'] = s*d.atY; // make sure to move the y property before overriding it
-					res['atY'] = m_Constants.ShipYOffset;
-				}
-				res.x = s*d.x;
-				res.z = s*d.y; // make sure to move the y property before overriding it
-				res.y = m_Constants.ShipYOffset;
-				return res;
-			};
-			var actions = [];
-			var index = 0;
 
 			// preprocess initial map information
 			// m_ocean = { "x": ((4*Math.floor(data.ocean.x/2))-2) + (m_Constants.OceanPadding/2),
@@ -219,13 +206,6 @@ function battleship() {
 			//             "depth": (4*data.ocean.y)+m_Constants.OceanPadding, 
 			//             "density": Math.min(3*data.ocean.x, 3*data.ocean.y)+m_Constants.OceanPadding
 			//         };
-			// m_ocean = { "x": ((OPTION.GridScale*Math.floor(data.ocean.x/2))-2),
-			// 			"y": OPTION.OceanYOffset, 
-			// 			"z": ((OPTION.GridScale*Math.floor(data.ocean.y/2))),
-			// 			"width": 200, 
-			// 			"depth": 200,
-			// 			"density": 120,
-			// 		};
 			result.map = {
 				"x": ((OPTION.GridScale*Math.floor(data.ocean.x/2))-2),
 				"y": OPTION.OceanYOffset, 
@@ -238,10 +218,15 @@ function battleship() {
 			console.log(data);
 			// scale up ship's initial locations 
 			result.ships = app.transform(data.ships, OPTION.GridScale, OPTION);
+			
 			// scale up action locations
-			let tmp = app.transform(data.turns, OPTION.GridScale, OPTION);
+			//let tmp = app.transform(data.turns, OPTION.GridScale, OPTION);
 			// preprocess actions and turns information
-			result.turns = app.actionChain(tmp);
+			//result.turns = app.actionChain(tmp);
+
+			// scale up action's coordinates, aggregate chainable actions
+			result.turns = app.actionChain(app.transform(data.turns, OPTION.GridScale, OPTION));
+
 			console.log(result);
 			return result;
 		},
