@@ -55,7 +55,7 @@ function battleship() {
 		let slide = document.getElementById('slider');
 		slide.setAttribute("min", 0);
 		slide.setAttribute("max", data.snapshots.future.length);
-		slide.setAttribute("value", 0);
+		slide.value = 0;
 
 		let model = {
 			html: htmlElements,
@@ -504,17 +504,19 @@ function battleship() {
 
 		interrupt: () => {
 			return new Promise((resolve, reject) => {
-				window.addEventListener('keypress', resolve, {once: true});
+				document.getElementById("slider").addEventListener("click", (event) => {
+					console.log(event);
+				});
 			});
 		},
 
 		simulate: (data) => {
 			console.log("simulate: ", data);
 			let slider = document.getElementById("slider");
+			slider.value = data.snapshots.past.length;
 			// app.interrupt().then((done) => {
 			// 	console.log(done);
 			// });
-
 			let isDone = false;
 			if (data.snapshots.future.length == 0) {
 				isDone = true
@@ -528,8 +530,9 @@ function battleship() {
 							//alert("Moved " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
-							slider.value = data.snapshots.past.length;
-							app.simulate(data);
+							// app.interrupt().then((done) => {
+								app.simulate(data);
+							// });
 						}).catch((err) => {
 							console.error(err);
 						});
@@ -539,8 +542,9 @@ function battleship() {
 							//alert("Fired " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
-							slider.value = data.snapshots.past.length;
-							app.simulate(data);
+							// app.interrupt().then((done) => {
+								app.simulate(data);
+							// });
 						}).catch((err) => {
 							console.error(err);
 						});
@@ -550,8 +554,9 @@ function battleship() {
 							//alert("Sunk "+ data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
-							slider.value = data.snapshots.past.length;
-							app.simulate(data);
+							// app.interrupt().then((done) => {
+								app.simulate(data);
+							// });
 						}).catch((err) => {
 							console.error(err);
 						});
