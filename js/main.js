@@ -54,7 +54,7 @@ function battleship() {
 		
 		let model = {
 			html: htmlElements,
-			states: data.states
+			snapshots: data.snapshots
 		};
 
 		// begin simulation
@@ -106,12 +106,12 @@ function battleship() {
 		reducer: (tree, action, OPTION) => {
 			// Converts actions into state tree starting from inital states and list of actions
 			console.log(tree);
-			let snapshot = {
-				"states": tree.state,
+			let structure = {
+				"states": tree.states,
 				"next": action
 			};
 			
-			snapshot.state = tree.state.map((ship) => {
+			structure.states = tree.states.map((ship) => {
 				if (action.id === ship.id) {
 					switch(action.type) {
 						case "Move":
@@ -152,7 +152,7 @@ function battleship() {
 				}
 			});
 
-			return snapshot;
+			return structure;
 		},
 
 		// TODO: Write Test Case
@@ -244,7 +244,7 @@ function battleship() {
 
 			console.log(result);
 			// add a state tree attribute to the result
-			result.states = {
+			result.snapshots = {
 				past: [],
 				present: {},
 				future: []
@@ -252,13 +252,13 @@ function battleship() {
 
 			console.log("initial state: ", result.ships);
 
-			let currentState = {state: result.ships, next:result.turns[0]}; // initial state
+			let currentState = {states: result.ships, next:result.turns[0]}; // initial state
 			result.turns.forEach((turn) => {
-				result.states.future.push(currentState);
+				result.snapshots.future.push(currentState);
 				currentState = app.reducer(currentState, turn, OPTION);
 			});
-			result.states.future.reverse();
-			result.states.present = result.states.future.pop(0);
+			result.snapshots.future.reverse();
+			result.snapshots.present = result.snapshots.future.pop(0);
 
 			console.log(result);
 			return result;
@@ -510,12 +510,14 @@ function battleship() {
 			// 	console.log(done);
 			// });
 
-			var notStop = true;
-			if (data.turns.length == 0) {
-				notStop = false;
+			let isDone = false;
+			if (data.states.future.length == 0) {
+				isDone = true
 			}
+			// let tmp = data.states.future.pop()
+			// console.log("second: ", tmp);
 			var current = data.turns.shift(); // don't shift when length is zero
-			if (current && notStop) {
+			if (current && !isDone) {
 				console.log("current: ", current);
 				switch(current.type) {
 					case "MOVE":
