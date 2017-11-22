@@ -27,11 +27,7 @@ function battleship() {
 		WaitTimePerTileMoved: 300,
 		WaitTimeBetweenAction: 100 // in miliseconds
 	};
-
-	var m_input = {};
 	
-	var m_ships = []; // stores formatted json of ship initialization
-	var m_chain = []; // stores chainable actions in a turn
 	var m_entity = {}; // object with id to html dom element of ships
 	
 	var m_states = {
@@ -39,8 +35,6 @@ function battleship() {
 		present: {},
 		future: []
 	};
-
-	var m_ocean; 
 
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -55,8 +49,8 @@ function battleship() {
 	function startSimulation(inputs) {
 		let data = app.preprocess(inputs, m_Constants);
 
-		var doc = document.getElementById('scene');
-		var track = document.createElement('a-curve');
+		let doc = document.getElementById('scene');
+		let track = document.createElement('a-curve');
 		track.setAttribute('id', 'track');
 		track.setAttribute('type', 'Line');
 		doc.appendChild(track);
@@ -250,7 +244,7 @@ function battleship() {
 
 			// scale up action's coordinates, then aggregate chainable actions
 			result.turns = app.actionChain( app.transform(data.turns, OPTION.GridScale, OPTION) );
-			result.turns.push({type: "END", actions: undefined}); 
+			result.turns.push({type: "END", actions: undefined}); // add end turn
 
 			console.log(result);
 			// add a state tree attribute to the result
@@ -261,16 +255,11 @@ function battleship() {
 			};
 
 			console.log("initial state: ", result.ships);
-			let count = 0;
 
 			let currentState = {state: result.ships, next:result.turns[0]}; // initial state
 			result.turns.forEach((turn) => {
 				result.state.future.push(currentState);
-
-				// let previousState = result.state.future[result.state.future.length - 1];
-				// console.log("iteration"+count, previousState, turn);
 				currentState = app.reducer(currentState, turn, OPTION);
-				// console.log("Reducer Ouput: ", out);
 			});
 			result.state.future.reverse();
 			result.state.present = result.state.future.pop(0);
@@ -522,7 +511,7 @@ function battleship() {
 				switch(current.type) {
 					case "MOVE":
 						app.moveShip(current.actions).then((done) => {
-							//alert("Moved " + m_chain.length + " actions left");
+							//alert("Moved " + data.turns.length + " actions left");
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
@@ -530,7 +519,7 @@ function battleship() {
 						break;
 					case "FIRE":
 						app.fireShip(current.actions).then((done) => {
-							//alert("Fired " + m_chain.length + " actions left");
+							//alert("Fired " + data.turns.length + " actions left");
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
@@ -538,7 +527,7 @@ function battleship() {
 						break;
 					case "SINK":
 						app.sinkShip(current.actions).then((done) => {
-							//alert("Sunk "+ m_chain.length + " actions left");
+							//alert("Sunk "+ data.turns.length + " actions left");
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
@@ -561,21 +550,6 @@ function battleship() {
 			AFrame Scene: Each ship model is a 4x4 box
 			AFrame Scene: Coordinate system is (0, 0) at the center (with negatives)
 		*/
-		getStrCoord: (coord, offsetY) => {
-			return (m_ocean.x-coord.x)*4 + " " + offsetY + " " + (m_ocean.y-coord.y)*4;
-		},
-
-		getShips: () => {
-			return m_ships;
-		},
-
-		getOcean: () => {
-			return m_ocean;
-		},
-
-		getInput: () => {
-			return m_input;
-		}
 
 	}
 
