@@ -52,6 +52,11 @@ function battleship() {
 		let htmlElements = app.render(data, m_Constants);
 		console.log(data);
 		
+		let slide = document.getElementById('slider');
+		slide.setAttribute("min", 0);
+		slide.setAttribute("max", data.snapshots.future.length);
+		slide.setAttribute("value", 0);
+
 		let model = {
 			html: htmlElements,
 			snapshots: data.snapshots
@@ -505,7 +510,7 @@ function battleship() {
 
 		simulate: (data) => {
 			console.log("simulate: ", data);
-
+			let slider = document.getElementById("slider");
 			// app.interrupt().then((done) => {
 			// 	console.log(done);
 			// });
@@ -523,6 +528,7 @@ function battleship() {
 							//alert("Moved " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
+							slider.value = data.snapshots.past.length;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
@@ -533,6 +539,7 @@ function battleship() {
 							//alert("Fired " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
+							slider.value = data.snapshots.past.length;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
@@ -543,6 +550,7 @@ function battleship() {
 							//alert("Sunk "+ data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
+							slider.value = data.snapshots.past.length;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
