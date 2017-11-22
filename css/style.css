@@ -29,6 +29,7 @@
 }
 
 #slider::-webkit-slider-thumb:hover,
+#slider::-webkit-slider-thumb:focus,
 #slider::-webkit-slider-thumb:active {
 	width: 30px;
 	height: 30px;
