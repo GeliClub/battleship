@@ -31,7 +31,7 @@
 	<script type="text/javascript" src="./js/input.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="./css/pure-drawer.css"/>
-
+	<link rel="stylesheet" type="text/css" href="./css/style.css">
 </head>
 <body>
 	<div class="pure-container" data-effect="pure-effect-scaleRotate">
@@ -47,8 +47,12 @@
 		<!-- Page Content -->
 		<div class="pure-pusher-container">
 			<div class="pure-pusher"> <!-- Menu Pusher Wrapper -->
-			<a-scene id="scene" fog="type: exponential; color: #FFF; density: 0.03;">
+			
+			<div id="slidercontainer">
+				<input id="slider" type="range">
+			</div>
 
+			<a-scene id="scene" fog="type: exponential; color: #FFF; density: 0.03;">
 				<a-assets>
 					<!-- Ship model -->
 					<!-- <a-asset-item id="ship" src="./assets/ship.dae"></a-asset-item> -->
