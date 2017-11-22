@@ -454,7 +454,7 @@ function battleship() {
 				var previous = {'x': shipDom.dataset.x, 'z': shipDom.dataset.z};
 				var xDistance = 0;
 				var zDistance = 0;
-				console.log("Moving: ", data);
+				// console.log("Moving: ", data);
 				for (var i = 0; i < data.length; i++) {
 					point = document.createElement('a-curve-point');
 					point.setAttribute('position', data[i].x + " " + data[i].y + " " + data[i].z);
@@ -511,38 +511,47 @@ function battleship() {
 			// });
 
 			let isDone = false;
-			if (data.states.future.length == 0) {
+			if (data.snapshots.future.length == 0) {
 				isDone = true
 			}
-			// let tmp = data.states.future.pop()
-			// console.log("second: ", tmp);
-			var current = data.turns.shift(); // don't shift when length is zero
+			let current = data.snapshots.future.pop();
 			if (current && !isDone) {
 				console.log("current: ", current);
-				switch(current.type) {
+				switch(current.next.type) {
 					case "MOVE":
-						app.moveShip(current.actions).then((done) => {
+						app.moveShip(current.next.actions).then((done) => {
 							//alert("Moved " + data.turns.length + " actions left");
+							data.snapshots.past.push(data.snapshots.present);
+							data.snapshots.present = current;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
 						break;
 					case "FIRE":
-						app.fireShip(current.actions).then((done) => {
+						app.fireShip(current.next.actions).then((done) => {
 							//alert("Fired " + data.turns.length + " actions left");
+							data.snapshots.past.push(data.snapshots.present);
+							data.snapshots.present = current;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
 						break;
 					case "SINK":
-						app.sinkShip(current.actions).then((done) => {
+						app.sinkShip(current.next.actions).then((done) => {
 							//alert("Sunk "+ data.turns.length + " actions left");
+							data.snapshots.past.push(data.snapshots.present);
+							data.snapshots.present = current;
 							app.simulate(data);
 						}).catch((err) => {
 							console.error(err);
 						});
+						break;
+					case "END":
+						setTimeout(() => {
+							alert("Simulation Done");
+						}, 10000);
 						break;
 					default:
 						console.log("Unknown Action Type " + current.type + " in simulate function");
