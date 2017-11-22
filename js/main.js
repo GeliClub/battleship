@@ -1,5 +1,5 @@
 // Initialize Firebase
-var config = {
+let config = {
 	apiKey: "AIzaSyA9EYUXVL5WAh6Aam1qXlWyvi3b7HLcZ1U",
 	authDomain: "esigamma.firebaseapp.com",
 	databaseURL: "https://esigamma.firebaseio.com",
@@ -9,9 +9,9 @@ var config = {
 };
 firebase.initializeApp(config);
 
-var database = firebase.database();
+let database = firebase.database();
 
-var test;
+let test;
 
 function battleship() {
 	
@@ -28,44 +28,43 @@ function battleship() {
 		WaitTimeBetweenAction: 100 // in miliseconds
 	};
 	
-	var m_entity = {}; // object with id to html dom element of ships
-	
-	var m_states = {
-		past: [],
-		present: {},
-		future: []
-	};
+	let m_entity = {}; // object with id to html dom element of ships
 
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
 		name = name.replace(/[\[\]]/g, "\\$&");
-		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-		var results = regex.exec(url);
+		let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+		let results = regex.exec(url);
 		if (!results) return null;
 		if (!results[2]) return '';
 		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 
 	function startSimulation(inputs) {
-		let data = app.preprocess(inputs, m_Constants);
-
+		
 		let doc = document.getElementById('scene');
 		let track = document.createElement('a-curve');
 		track.setAttribute('id', 'track');
 		track.setAttribute('type', 'Line');
 		doc.appendChild(track);
 		
-		// begin simulation
+		let data = app.preprocess(inputs, m_Constants);
+		let htmlElements = app.render(data, m_Constants);
 		console.log(data);
-		// app.render(data);
+		
+		let model = {
+			html: htmlElements,
+			states: data.states
+		};
 
-		// setTimeout(() => {
-		// 	app.simulate(data);
-		// }, 10000);
+		// begin simulation
+		setTimeout(() => {
+			app.simulate(model);
+		}, 10000);
 	}
 
 	// public
-	var app = {
+	let app = {
 
 		init: () => {
 			let inputs = {};
@@ -106,15 +105,12 @@ function battleship() {
 
 		reducer: (tree, action, OPTION) => {
 			// Converts actions into state tree starting from inital states and list of actions
-			var snapshot = {
-				"state": tree.state,
+			console.log(tree);
+			let snapshot = {
+				"states": tree.state,
 				"next": action
 			};
-			test = tree;
-			console.log(tree);
-			// console.log(tree.state);
-			// console.log(tree.state.map);
-
+			
 			snapshot.state = tree.state.map((ship) => {
 				if (action.id === ship.id) {
 					switch(action.type) {
@@ -248,7 +244,7 @@ function battleship() {
 
 			console.log(result);
 			// add a state tree attribute to the result
-			result.state = {
+			result.states = {
 				past: [],
 				present: {},
 				future: []
@@ -258,11 +254,11 @@ function battleship() {
 
 			let currentState = {state: result.ships, next:result.turns[0]}; // initial state
 			result.turns.forEach((turn) => {
-				result.state.future.push(currentState);
+				result.states.future.push(currentState);
 				currentState = app.reducer(currentState, turn, OPTION);
 			});
-			result.state.future.reverse();
-			result.state.present = result.state.future.pop(0);
+			result.states.future.reverse();
+			result.states.present = result.states.future.pop(0);
 
 			console.log(result);
 			return result;
@@ -271,18 +267,19 @@ function battleship() {
 		// Displays the ocean, and ships
 		// TODO: check the edge cases with the map edges/sizes
 		render: (data, OPTION) => {
-			var doc = document.getElementById('scene'); // <a-scene> reference
+			let htmlElement = {};
+			let doc = document.getElementById('scene'); // <a-scene> reference
 
 			// re-position camera: camera must be already present when html loads
-			var camera = document.getElementById('camera');
+			let camera = document.getElementById('camera');
 			//camera.setAttribute('position', data.ocean.x + " " + data.ocean.y + " " + data.ocean.z);
 			camera.setAttribute('position', data.map.x + " " + data.map.y + " " + (data.map.z+(1.5*data.map.x)));
-			camera.setAttribute('camera', 'userHeight: ' + m_Constants.CameraYOffset);
-			camera.setAttribute('rotation', -Math.atan(m_Constants.CameraYOffset/(data.map.z+data.map.x)));
+			camera.setAttribute('camera', 'userHeight: ' + OPTION.CameraYOffset);
+			camera.setAttribute('rotation', -Math.atan(OPTION.CameraYOffset/(data.map.z+data.map.x)));
 			
 			// Generate Map
 			// TODO: Possible edge cases with the map edge not being big enough
-			var map = document.createElement('a-ocean');
+			let map = document.createElement('a-ocean');
 
 			map.setAttribute('position', data.map.x + " " + data.map.y + " " + data.map.z);
 			map.setAttribute('width', String(data.map.width));
@@ -292,10 +289,10 @@ function battleship() {
 
 			// Spawn Ships
 			data.ships.forEach((entry) => {
-				var shipHull = document.createElement('a-entity');
-				var shipMount = document.createElement('a-entity');
-				var shipCannon = document.createElement('a-entity');
-				var name = document.createElement('a-entity');
+				let shipHull = document.createElement('a-entity');
+				let shipMount = document.createElement('a-entity');
+				let shipCannon = document.createElement('a-entity');
+				let name = document.createElement('a-entity');
 				
 				name.setAttribute('position', "0 2 0");
 				name.setAttribute('look-at', '#camera');
@@ -328,9 +325,10 @@ function battleship() {
 				shipHull.appendChild(shipMount);
 				shipHull.appendChild(shipCannon);
 				m_entity[entry.id] = shipHull;
-
+				htmlElement[entry.id] = shipHull;
 			});
-
+			console.log(m_entity);
+			return htmlElement;
 		},
 
 		sinkShip: (data) => {
@@ -500,7 +498,7 @@ function battleship() {
 		},
 
 		simulate: (data) => {
-			console.log("chain: ", data);
+			console.log("simulate: ", data);
 			var notStop = true;
 			if (data.turns.length == 0) {
 				notStop = false;
