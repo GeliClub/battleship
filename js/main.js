@@ -497,8 +497,19 @@ function battleship() {
 			});
 		},
 
+		interrupt: () => {
+			return new Promise((resolve, reject) => {
+				window.addEventListener('keypress', resolve, {once: true});
+			});
+		},
+
 		simulate: (data) => {
 			console.log("simulate: ", data);
+
+			// app.interrupt().then((done) => {
+			// 	console.log(done);
+			// });
+
 			var notStop = true;
 			if (data.turns.length == 0) {
 				notStop = false;
