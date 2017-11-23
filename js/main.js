@@ -502,11 +502,15 @@ function battleship() {
 			});
 		},
 
-		interrupt: () => {
-			return new Promise((resolve, reject) => {
-				document.getElementById("slider").addEventListener("click", (event) => {
-					console.log(event);
+		interrupt: (data) => {
+			new Promise((resolve, reject) => {
+				document.getElementById("slider").addEventListener("click", function sliderclicked(event) {
+					document.getElementById("slider").removeEventListener("click", sliderclicked);
+					console.log("slider clicked");
+					resolve();
 				});
+			}).then(() => {
+				app.simulate(data);
 			});
 		},
 
@@ -531,7 +535,8 @@ function battleship() {
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
-								app.simulate(data);
+								// app.simulate(data);
+								app.interrupt(data);
 							// });
 						}).catch((err) => {
 							console.error(err);
@@ -543,7 +548,8 @@ function battleship() {
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
-								app.simulate(data);
+								// app.simulate(data);
+								app.interrupt(data);
 							// });
 						}).catch((err) => {
 							console.error(err);
@@ -555,7 +561,8 @@ function battleship() {
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
-								app.simulate(data);
+								// app.simulate(data);
+								app.interrupt(data);
 							// });
 						}).catch((err) => {
 							console.error(err);
