@@ -503,13 +503,22 @@ function battleship() {
 		},
 
 		interrupt: (data) => {
+			// console.log("Starting interrupt");
 			new Promise((resolve, reject) => {
-				document.getElementById("slider").addEventListener("click", function sliderclicked(event) {
-					document.getElementById("slider").removeEventListener("click", sliderclicked);
-					console.log("slider clicked");
-					resolve();
-				});
+				setTimeout(() => {
+					// console.log("Starting Timeout");
+					document.getElementById("slider").addEventListener("click", function sliderclicked(event) {
+						document.getElementById("slider").removeEventListener("click", sliderclicked);
+						console.log("Slide Bar clicked");
+						resolve();
+					});
+				}, 1000);
+
+				console.log("interrupt passed");
+				resolve();
+				
 			}).then(() => {
+				// console.log("Promise finished");
 				app.simulate(data);
 			});
 		},
