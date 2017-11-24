@@ -531,6 +531,42 @@ function battleship() {
 			// });
 		},
 
+		inputs: (data, OPTION) => {
+			let slideBar = new Promise((resolve, reject) => {
+				setTimeout(() => {
+					// console.log("Starting Timeout");
+					document.getElementById("slider").addEventListener("click", function sliderclicked(event) {
+						document.getElementById("slider").removeEventListener("click", sliderclicked);
+						console.log("Slide Bar clicked");
+						let reset = document.getElementById("slider");
+						console.log(reset.value);
+						// app.resetState(data);
+						reject();
+					});
+				}, 1000);
+			});
+
+			// TODO: 
+			let userInput = new Promise((resolve, reject) => {
+				setTimeout(() => {
+					window.addEventListener("keypress", function keyboard(event) => {
+						window.removeEventListener("keypress", keyboard);
+						console.log(event);
+						if (OPTION.AutoPlay) {
+							OPTION.AutoPlay = !OPTION.AutoPlay;
+							resolve();
+						} else {
+							OPTION.AutoPlay = !OPTION.AutoPlay;
+						}
+					});
+				// this promise cannot be limited by a timeout, paused may last a very long time
+				}, 1000); 
+			});
+
+			// return either promise that finishes first
+			return Promise.race([slideBar, userInput]);
+		},
+
 		interrupt: (data, OPTION) => {
 			// console.log("Starting interrupt");
 			new Promise((resolve, reject) => {
