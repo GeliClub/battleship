@@ -61,10 +61,11 @@ function battleship() {
 			html: htmlElements,
 			snapshots: data.snapshots
 		};
+		test = model;
 
 		// begin simulation
 		setTimeout(() => {
-			app.simulate(model);
+			app.simulate(model, m_Constants);
 		}, 10000);
 	}
 
@@ -336,11 +337,13 @@ function battleship() {
 			return htmlElement;
 		},
 
-		sinkShip: (data) => {
+		sinkShip: (data, OPTION) => {
+			console.log("sink:", data);
 			return new Promise((resolve, reject) => {
-				var doc = document.getElementById('scene');
-				var track = document.getElementById('track');
-				var shipDom = m_entity[data[0].id];
+				let doc = document.getElementById('scene');
+				let track = document.getElementById('track');
+				let action = data.present.next.actions[0]; // sink should only have a size of one
+				var shipDom = data.html[action.id];
 
 				var debug = document.createElement('a-draw-curve');
 				debug.setAttribute('curveref', '#track');
@@ -349,8 +352,8 @@ function battleship() {
 
 				var point1 = document.createElement('a-curve-point');
 				var point2 = document.createElement('a-curve-point');
-				point1.setAttribute('position', data[0].x + " " + data[0].y + " " + data[0].z);
-				point2.setAttribute('position', data[0].x + " " + (data[0].y-m_Constants.SinkDistance) + " " + data[0].z);
+				point1.setAttribute('position', action.x + " " + action.y + " " + action.z);
+				point2.setAttribute('position', action.x + " " + (action.y-m_Constants.SinkDistance) + " " + action.z);
 				track.appendChild(point1);
 				track.appendChild(point2);
 
@@ -367,10 +370,16 @@ function battleship() {
 					}
 
 					//shipDom.removeEventListener('movingended', done);
-
-					if (shipDom.parentNode) {
-						doc.removeChild(shipDom);
-					}
+					shipDom.removeAttribute("alongpath");
+					shipDom.setAttribute("visible", false);
+					console.log(shipDom);
+					shipDom.childNodes.forEach((node) => {
+						console.log(node);
+						node.setAttribute("visible", false);
+					})
+					// if (shipDom.parentNode) {
+					// 	doc.removeChild(shipDom);
+					// }
 
 					resolve(event);
 				};
@@ -502,7 +511,27 @@ function battleship() {
 			});
 		},
 
-		interrupt: (data) => {
+		resetState: (data) => {
+			console.log("Reset data: ", data);
+			let reset = document.getElementById("slider");
+			while (reset.value != data.snapshots.past.length) {
+
+				if (reset.value < data.snapshots.past.length) { // reset to the past
+					data.snapshots.future.push(data.snapshots.present);
+					data.snapshots.present = data.snapshots.past.pop();
+				} 
+				else if (reset.value > data.snapshots.past.length) { // reset to the future
+					data.snapshots.past.push(data.snapshots.present);
+					data.snapshots.present = data.snapshots.future.pop();
+				}
+			}
+
+			// data.html.forEach((ship) => {
+
+			// });
+		},
+
+		interrupt: (data, OPTION) => {
 			// console.log("Starting interrupt");
 			new Promise((resolve, reject) => {
 				setTimeout(() => {
@@ -510,20 +539,23 @@ function battleship() {
 					document.getElementById("slider").addEventListener("click", function sliderclicked(event) {
 						document.getElementById("slider").removeEventListener("click", sliderclicked);
 						console.log("Slide Bar clicked");
-						resolve();
+						let reset = document.getElementById("slider");
+						console.log(reset.value);
+						// app.resetState(data);
+						reject();
 					});
 				}, 1000);
 
 				console.log("interrupt passed");
 				resolve();
-				
-			}).then(() => {
+			})
+			.then(() => {
 				// console.log("Promise finished");
-				app.simulate(data);
+				app.simulate(data, OPTION);
 			});
 		},
 
-		simulate: (data) => {
+		simulate: (data, OPTION) => {
 			console.log("simulate: ", data);
 			let slider = document.getElementById("slider");
 			slider.value = data.snapshots.past.length;
@@ -545,7 +577,7 @@ function battleship() {
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
 								// app.simulate(data);
-								app.interrupt(data);
+								app.interrupt(data, OPTION);
 							// });
 						}).catch((err) => {
 							console.error(err);
@@ -558,20 +590,20 @@ function battleship() {
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
 								// app.simulate(data);
-								app.interrupt(data);
+								app.interrupt(data, OPTION);
 							// });
 						}).catch((err) => {
 							console.error(err);
 						});
 						break;
 					case "SINK":
-						app.sinkShip(current.next.actions).then((done) => {
+						app.sinkShip({html: data.html, present: current}).then((done) => {
 							//alert("Sunk "+ data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
 							// app.interrupt().then((done) => {
 								// app.simulate(data);
-								app.interrupt(data);
+								app.interrupt(data, OPTION);
 							// });
 						}).catch((err) => {
 							console.error(err);
