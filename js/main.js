@@ -13,7 +13,7 @@ let database = firebase.database();
 
 let test;
 
-function battleship() {
+function Battleship() {
 	
 	// private
 	let m_Constants = {
@@ -294,6 +294,7 @@ function battleship() {
 			doc.appendChild(map);
 
 			// Spawn Ships
+			console.log(data.ships);
 			data.ships.forEach((entry) => {
 				let shipHull = document.createElement('a-entity');
 				let shipMount = document.createElement('a-entity');
@@ -549,7 +550,7 @@ function battleship() {
 			// TODO: 
 			let userInput = new Promise((resolve, reject) => {
 				setTimeout(() => {
-					window.addEventListener("keypress", function keyboard(event) => {
+					window.addEventListener("keypress", function keyboard(event) {
 						window.removeEventListener("keypress", keyboard);
 						console.log(event);
 						if (OPTION.AutoPlay) {
@@ -673,7 +674,7 @@ function battleship() {
 	return app;
 }
 
-var app = battleship();
+var app = Battleship();
 app.init();
 
 // var BATTLE_SERVER_URL = 'https://battleship-vingkan.c9users.io/1v1?p1=esi17.cs.DestroyerShip&p2=esi17.hli109.Floater';// + Math.ceil(Math.random() * 100);
