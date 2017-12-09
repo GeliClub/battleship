@@ -294,7 +294,6 @@ function Battleship() {
 			doc.appendChild(map);
 
 			// Spawn Ships
-			console.log(data.ships);
 			data.ships.forEach((entry) => {
 				let shipHull = document.createElement('a-entity');
 				let shipMount = document.createElement('a-entity');
@@ -441,10 +440,14 @@ function Battleship() {
 		},
 
 		// Data passed in must be for movement of one ship
-		moveShip: (data) => {
+		moveShip: (model, data) => {
 			return new Promise((resolve, reject) => {
+				console.log('moveShip: ', data);
+				let shipDom = model[data[0].id];
+				//var shipDom = m_entity[data.next.actions[0].id]; // html element
+				console.log('Given Data: ', model);
+				console.log('Saved Data: ', m_entity);
 
-				var shipDom = m_entity[data[0].id]; // html element
 				// if statement is not working
 				// if (data.length === 1 && data[0].x === shipDom.dataset.x && data[0].z === shipDom.dataset.z) {
 				//     // if shipDom tries to move against edge or occupied place
@@ -481,6 +484,7 @@ function Battleship() {
 					track.appendChild(point);
 					previous = {'x': data[i].x, 'z': data[i].z};
 				}
+				
 				var dur = (xDistance+zDistance)*m_Constants.WaitTimePerTileMoved;
 				shipDom.setAttribute('alongpath', 'curve: #track; rotate: true; constraint: 0 0 1; delay: '+m_Constants.WaitTimeBetweenAction+'; dur: '+dur+';');
 
@@ -498,6 +502,7 @@ function Battleship() {
 					}
 					
 					shipDom.removeAttribute('alongpath');
+					
 					shipDom.dataset.x = data[data.length-1].x;
 					shipDom.dataset.z = data[data.length-1].z;
 					shipDom.dataset.y = data[data.length-1].y;
@@ -505,9 +510,9 @@ function Battleship() {
 					//shipDom.removeEventListener('movingended', done);
 					resolve(event);
 				};
-
+				console.log('here1');
 				shipDom.addEventListener('movingended', done);
-
+				console.log('here2');
 				
 			});
 		},
@@ -604,11 +609,12 @@ function Battleship() {
 				isDone = true
 			}
 			let current = data.snapshots.future.pop();
+			let model = data.html;
 			if (current && !isDone) {
 				console.log("current: ", current);
 				switch(current.next.type) {
 					case "MOVE":
-						app.moveShip(current.next.actions).then((done) => {
+						app.moveShip(model, current.next.actions).then((done) => {
 							//alert("Moved " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
