@@ -3,13 +3,12 @@ function Ship() {
 	let action = {
 		render: (data) => {
 			let attr = {
-				"rendered": false,
 				// 3D component of the ship object
-				"hull": null, 
+				"dom": null, 
 				"mount": null,
 				"cannon": null,
 				// 3D status and attributes of ships
-				"damage": null,
+				"health": null,
 				"color": null,
 				"tag": null,
 				// Simulation related information 
@@ -20,7 +19,7 @@ function Ship() {
 				"y": null,
 				"z": null,
 				"firepower": null,
-				"health": null,
+				"hull": null,
 				"speed": null,
 				"range": null,
 				"sunked": null,
@@ -31,7 +30,7 @@ function Ship() {
 			let doc = document.getElementById('scene');
 
 			attr.tag = document.createElement('a-entity');
-			attr.hull = document.createElement('a-entity');
+			attr.dom = document.createElement('a-entity');
 			attr.mount = document.createElement('a-entity');
 			attr.cannon = document.createElement('a-entity');
 
@@ -40,17 +39,19 @@ function Ship() {
 			attr.tag.setAttribute('text-geometry', attr.name)
 			attr.tag.setAttribute('material', 'color: blue;');
 
-			attr.hull.setAttribute('position', attr.x + ' ' + attr.y + ' ' + attr.z);
-			attr.hull.setAttribute('obj-model', 'obj: #shipHull');
-			attr.hull.setAttribute('material', ('color: '+attr.color+'; metalness: 0.4;')||('color: blue; metalness: 0.4;'));
+			attr.dom.setAttribute('position', attr.x + ' ' + attr.y + ' ' + attr.z);
+			attr.dom.setAttribute('obj-model', 'obj: #shipHull');
+			attr.dom.setAttribute('material', ('color: '+attr.color+'; metalness: 0.4;')||('color: blue; metalness: 0.4;'));
 
 			attr.mount.setAttribute('obj-model', 'obj: #shipMount');
 			attr.cannon.setAttribute('obj-model', 'obj: #shipCannon');
 
-			doc.appendChild(attr.hull);
-			attr.hull.appendChild(attr.name);
-			attr.hull.appendChild(attr.mount);
-			attr.hull.appendChild(attr.cannon);
+			doc.appendChild(attr.dom);
+			attr.dom.appendChild(attr.name);
+			attr.dom.appendChild(attr.mount);
+			attr.dom.appendChild(attr.cannon);
+
+			attr.dom = attr.hull;
 
 			return attr;
 		},

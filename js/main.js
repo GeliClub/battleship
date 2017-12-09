@@ -294,46 +294,48 @@ function Battleship() {
 			doc.appendChild(map);
 
 			// Spawn Ships
+			let ship = Ship();
 			data.ships.forEach((entry) => {
-				let shipHull = document.createElement('a-entity');
-				let shipMount = document.createElement('a-entity');
-				let shipCannon = document.createElement('a-entity');
-				let name = document.createElement('a-entity');
+				htmlElement[entry.id] = ship.render(data);
+				// let result = ship.render(entry);
+				// let shipHull = document.createElement('a-entity');
+				// let shipMount = document.createElement('a-entity');
+				// let shipCannon = document.createElement('a-entity');
+				// let name = document.createElement('a-entity');
 				
-				name.setAttribute('position', "0 2 0");
-				name.setAttribute('look-at', '#camera');
-				name.setAttribute('text-geometry', "value: "+entry.name.substring(0, Math.min(entry.name.length, 24)) + "; font: #play");
-				name.setAttribute('material', 'color: blue;');
+				// name.setAttribute('position', "0 2 0");
+				// name.setAttribute('look-at', '#camera');
+				// name.setAttribute('text-geometry', "value: "+entry.name.substring(0, Math.min(entry.name.length, 24)) + "; font: #play");
+				// name.setAttribute('material', 'color: blue;');
 
-				shipHull.setAttribute('position', entry.x + " " + entry.y + " " + entry.z);
-				shipHull.dataset.id = entry.id;
-				shipHull.dataset.name = entry.name;
-				shipHull.dataset.owner = entry.owner;
-				shipHull.dataset.x = entry.x;
-				shipHull.dataset.y = entry.y;
-				shipHull.dataset.z = entry.z;
-				shipHull.dataset.health = entry.hull;
-				shipHull.dataset.hull = entry.hull;
-				shipHull.dataset.firepower = entry.firepower;
-				shipHull.dataset.speed = entry.speed;
-				shipHull.dataset.range = entry.range;
-				// shipHull.setAttribute('src', '#ShipHull'); // for collada models
-				shipHull.setAttribute('obj-model', 'obj: #shipHull');
-				shipHull.setAttribute('material', 'color: '+entry.color+'; metalness: 0.4;');
+				// shipHull.setAttribute('position', entry.x + " " + entry.y + " " + entry.z);
+				// shipHull.dataset.id = entry.id;
+				// shipHull.dataset.name = entry.name;
+				// shipHull.dataset.owner = entry.owner;
+				// shipHull.dataset.x = entry.x;
+				// shipHull.dataset.y = entry.y;
+				// shipHull.dataset.z = entry.z;
+				// shipHull.dataset.health = entry.hull;
+				// shipHull.dataset.hull = entry.hull;
+				// shipHull.dataset.firepower = entry.firepower;
+				// shipHull.dataset.speed = entry.speed;
+				// shipHull.dataset.range = entry.range;
+				// // shipHull.setAttribute('src', '#ShipHull'); // for collada models
+				// shipHull.setAttribute('obj-model', 'obj: #shipHull');
+				// shipHull.setAttribute('material', 'color: '+entry.color+'; metalness: 0.4;');
 
-				//shipMount.setAttribute('material', 'color: '+entry.color+';');
-				shipMount.setAttribute('obj-model', 'obj: #shipMount');
-				shipCannon.setAttribute('obj-model', 'obj: #shipCannon');
+				// //shipMount.setAttribute('material', 'color: '+entry.color+';');
+				// shipMount.setAttribute('obj-model', 'obj: #shipMount');
+				// shipCannon.setAttribute('obj-model', 'obj: #shipCannon');
 
 
-				doc.appendChild(shipHull);
-				shipHull.appendChild(name);
-				shipHull.appendChild(shipMount);
-				shipHull.appendChild(shipCannon);
-				m_entity[entry.id] = shipHull;
-				htmlElement[entry.id] = shipHull;
+				// doc.appendChild(shipHull);
+				// shipHull.appendChild(name);
+				// shipHull.appendChild(shipMount);
+				// shipHull.appendChild(shipCannon);
+				// m_entity[entry.id] = shipHull;
+				// htmlElement[entry.id] = shipHull;
 			});
-			console.log(m_entity);
 			return htmlElement;
 		},
 
@@ -502,7 +504,7 @@ function Battleship() {
 					}
 					
 					shipDom.removeAttribute('alongpath');
-					
+
 					shipDom.dataset.x = data[data.length-1].x;
 					shipDom.dataset.z = data[data.length-1].z;
 					shipDom.dataset.y = data[data.length-1].y;
