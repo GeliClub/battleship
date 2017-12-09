@@ -77,7 +77,7 @@ function Ship() {
 
 				shipDom.setAttribute('alongpath', 'curve: #track; rotate: true; constraint: 0 1 0; delay: ' + OPTION.WaitTimeBetweenAction + '; dur: 3000;');
 
-				let done = () => {
+				shipDom.addEventListener('movingended', () => {
 					shipDom.removeAttribute('alongpath');
 					if (debug.parentNode) {
 						doc.removeChild(debug);
@@ -94,9 +94,7 @@ function Ship() {
 					});
 
 					resolve();
-				};
-
-				shipDom.addEventListener('movingended', done);
+				});
 			});
 		},
 
@@ -127,7 +125,7 @@ function Ship() {
 				let path = doc.appendChild(bullet);
 				path.setAttribute('alongpath', 'curve: #track; rotate: true; constant: 0 0 1; delay: 200; dur: 500');
 
-				let done = () => {
+				path.addEventListener('movingended', () => {
 					path.removeAttribute('alongpath');
 					if (debug.parentNode) {
 						doc.removeChild(debug);
@@ -142,15 +140,58 @@ function Ship() {
 					}
 
 					resolve();
-				};
-
-				path.addEventListener('movingended', done);
+				});
 			});
 		},
 
-		moveShip: (data) => {
+		moveShip: (model, data, OPTION) => {
 			return new Promise((resolve, reject) => {
+				let doc = document.getElementById('scene');
+				let track = document.getElementById('track');
+				let shipDom = model[data[0].id];
 
+				// add a path to show movement along the path
+				let debug = document.createElement('a-draw-curve');
+				debug.setAttribute('curveref', '#track');
+				debug.setAttribute('materal', 'shader: line; color: blue;');
+				doc.appendChild(debug);
+
+				// add current location as a starting point of the curve
+				let point = document.createElement('a-curve-point');
+				point.setAttribute('position', data[0].x + ' ' + data[0].y + ' ' + data[0].z);
+				track.appendChild(point);
+				// add chain-able goal locations to the curve
+				let previous = {'x': data[0].x, 'z': data[0].z};
+				let xDistance = 0;
+				let zDistance = 0;
+				for (let i = 0; i < data.length; i++) {
+					point = document.createElement('a-curve-point');
+					point.setAttribute('position', data[i].x + ' ' + data[i].y + ' ' + data[i].z);
+					xDistance += Math.abs(data[i].x - previous.x);
+					yDistance += Math.abs(data[i].z - previous.z);
+					if (i + 1 < data.length && data[i].x === data[i+1].x && data[i].z === data[i+1].z) {
+						i++;
+					}
+					track.appendChild(point);
+					previous = {'x': data[i].x, 'y': data[i].z};
+				}
+
+				// define time for movement so that speed of difference distance is consistent
+				let duration = (xDistance+zDistance)*OPTION.WaitTimePerTileMoved;
+				shipDom.setAttribute('alongpath', 'curve: #track; rotate: true; constraint: 0 0 1; delay: '+OPTION.WaitTimeBetweenAction+'; dur: '+duration+';');
+
+				shipDom.addEventListener('movingended', () => {
+					if (debug.parentNode) {
+						doc.removeChild(debug);
+					}
+
+					while(track.hasChildNodes()) {
+						track.removeChild(track.childNodes[0]);
+					}
+
+					shipDom.removeAttribute('alongpath');
+					resolve();
+				});
 			});
 		}
 	}
