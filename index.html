@@ -5,29 +5,44 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no,user-scalable=no,maximum-scale=1">
 	<title>Battleship</title>
+
 	<!-- Firebase -->
-	<script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+	<!-- <script type="text/javascript" src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script> -->
+	<script type="text/javascript" src="./lib/firebase.js"></script>
+	
 	<!-- jQuery -->
-	<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+	<!-- <script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script> -->
+	<script type="text/javascript" src="./lib/jquery-3.2.1.min.js"></script>
+	
 	<!-- A Frame import -->
-	<!-- <script src="https://aframe.io/releases/0.6.0/aframe.min.js"></script> -->
-	<script src="https://aframe.io/releases/0.6.0/aframe.js"></script>
-	<!-- <script src="https://aframe.io/releases/0.5.0/aframe.min.js"></script> -->
+	<!-- <script type="text/javascript" src="https://aframe.io/releases/0.6.0/aframe.js"></script> -->
+	<script type="text/javascript" src="./lib/aframe.js"></script>
+	
 	<!-- A Frame Extras Component -->
+	<!-- <script type="text/javascript" src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.13.1/dist/aframe-extras.min.js"></script> -->
 	<script type="text/javascript" src="./lib/aframe-extras.min.js"></script>
+
 	<!-- A Frame Curve Component -->
-	<script src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script> 
+	<!-- <script type="text/javascript" src="https://unpkg.com/aframe-curve-component/dist/aframe-curve-component.min.js"></script>  -->
+	<script type="text/javascript" src="./lib/aframe-curve-component.min.js"></script>
+
 	<!-- A Frame along path Component (Edited to allow customization of constraints during curve movement) -->
+	<!-- <script type="text/javascript" src="https://rawgit.com/protyze/aframe-alongpath-component/master/dist/aframe-alongpath-component.min.js"></script> -->
 	<script type="text/javascript" src="./lib/aframe-alongpath-component.js"></script>
-	<!-- <script src="https://rawgit.com/protyze/aframe-alongpath-component/master/dist/aframe-alongpath-component.min.js"></script> -->
+
 	<!-- A Frame Text-Geometry -->
-	<script type="text/javascript" src="https://unpkg.com/aframe-text-geometry-component@^0.5.0/dist/aframe-text-geometry-component.min.js"></script>
+	<!-- <script type="text/javascript" src="https://unpkg.com/aframe-text-geometry-component@^0.5.0/dist/aframe-text-geometry-component.min.js"></script> -->
+	<script type="text/javascript" src="./lib/aframe-text-geometry-component.min.js"></script>
+
 	<!-- A Frame Look-At -->
-	<script type="text/javascript" src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script>
+	<!-- <script type="text/javascript" src="https://unpkg.com/aframe-look-at-component@0.5.1/dist/aframe-look-at-component.min.js"></script> -->
+	<script type="text/javascript" src=""></script>
 
-	<!-- A Frame Lerp Component -->
-	<!-- <script src="https://unpkg.com/aframe-lerp-component/dist/aframe-lerp-component.min.js"></script> -->
+	<!-- A Frame Template -->
+	<!-- <script type="text/javascript" src="https://unpkg.com/aframe-template-component@^3.2.1/dist/aframe-template-component.min.js"></script> -->
+	<script type="text/javascript" src="./vender/aframe-template-component.min.js"></script>
 
+	<!-- offline input for a simulation of a battle -->
 	<script type="text/javascript" src="./js/input.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="./css/pure-drawer.css"/>
@@ -100,6 +115,7 @@
 		<!-- Darken Content while in menu mode -->
 		<label class="pure-overlay" for="pure-toggle-left" data-overlay="left"></label>
 	</div>
+	<script type="text/javascript" src="./js/ship.js"></script>
 	<script type="text/javascript" src="./js/main.js"></script>
 </body>
 </html>
