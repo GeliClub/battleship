@@ -10,10 +10,11 @@ let config = {
 firebase.initializeApp(config);
 
 let database = firebase.database();
+let battleship = Ship();
 
 let test;
 
-function Battleship() {
+function Simulation() {
 	
 	// private
 	let m_Constants = {
@@ -49,6 +50,7 @@ function Battleship() {
 		doc.appendChild(track);
 		
 		let data = app.preprocess(inputs, m_Constants);
+
 		let htmlElements = app.render(data, m_Constants);
 		console.log(data);
 		
@@ -294,48 +296,10 @@ function Battleship() {
 			doc.appendChild(map);
 
 			// Spawn Ships
-			let ship = Ship();
 			data.ships.forEach((entry) => {
-				htmlElement[entry.id] = ship.render(data);
-				// let result = ship.render(entry);
-				// let shipHull = document.createElement('a-entity');
-				// let shipMount = document.createElement('a-entity');
-				// let shipCannon = document.createElement('a-entity');
-				// let name = document.createElement('a-entity');
-				
-				// name.setAttribute('position', "0 2 0");
-				// name.setAttribute('look-at', '#camera');
-				// name.setAttribute('text-geometry', "value: "+entry.name.substring(0, Math.min(entry.name.length, 24)) + "; font: #play");
-				// name.setAttribute('material', 'color: blue;');
-
-				// shipHull.setAttribute('position', entry.x + " " + entry.y + " " + entry.z);
-				// shipHull.dataset.id = entry.id;
-				// shipHull.dataset.name = entry.name;
-				// shipHull.dataset.owner = entry.owner;
-				// shipHull.dataset.x = entry.x;
-				// shipHull.dataset.y = entry.y;
-				// shipHull.dataset.z = entry.z;
-				// shipHull.dataset.health = entry.hull;
-				// shipHull.dataset.hull = entry.hull;
-				// shipHull.dataset.firepower = entry.firepower;
-				// shipHull.dataset.speed = entry.speed;
-				// shipHull.dataset.range = entry.range;
-				// // shipHull.setAttribute('src', '#ShipHull'); // for collada models
-				// shipHull.setAttribute('obj-model', 'obj: #shipHull');
-				// shipHull.setAttribute('material', 'color: '+entry.color+'; metalness: 0.4;');
-
-				// //shipMount.setAttribute('material', 'color: '+entry.color+';');
-				// shipMount.setAttribute('obj-model', 'obj: #shipMount');
-				// shipCannon.setAttribute('obj-model', 'obj: #shipCannon');
-
-
-				// doc.appendChild(shipHull);
-				// shipHull.appendChild(name);
-				// shipHull.appendChild(shipMount);
-				// shipHull.appendChild(shipCannon);
-				// m_entity[entry.id] = shipHull;
-				// htmlElement[entry.id] = shipHull;
+				htmlElement[entry.id] = battleship.render(entry);
 			});
+
 			return htmlElement;
 		},
 
@@ -468,10 +432,10 @@ function Battleship() {
 
 				// add current location as a starting point of the curve
 				var point = document.createElement('a-curve-point');
-				point.setAttribute('position', String(shipDom.dataset.x + " " + shipDom.dataset.y + " " + shipDom.dataset.z));
+				point.setAttribute('position', String(data[0].x + " " + data[0].y + " " + data[0].z));
 				track.appendChild(point);
 				// add chain-able goal locations to the curve
-				var previous = {'x': shipDom.dataset.x, 'z': shipDom.dataset.z};
+				var previous = {'x': data[0].x, 'z': data[0].z};
 				var xDistance = 0;
 				var zDistance = 0;
 				// console.log("Moving: ", data);
@@ -616,7 +580,7 @@ function Battleship() {
 				console.log("current: ", current);
 				switch(current.next.type) {
 					case "MOVE":
-						app.moveShip(model, current.next.actions).then((done) => {
+						battleship.moveShip(model, current.next.actions, OPTION).then((done) => {
 							//alert("Moved " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
@@ -629,7 +593,7 @@ function Battleship() {
 						});
 						break;
 					case "FIRE":
-						app.fireShip(current.next.actions).then((done) => {
+						battleship.fireShip(current.next.actions, OPTION).then((done) => {
 							//alert("Fired " + data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
@@ -642,7 +606,7 @@ function Battleship() {
 						});
 						break;
 					case "SINK":
-						app.sinkShip({html: data.html, present: current}).then((done) => {
+						battleship.sinkShip({html: data.html, present: current}, OPTION).then((done) => {
 							//alert("Sunk "+ data.turns.length + " actions left");
 							data.snapshots.past.push(data.snapshots.present);
 							data.snapshots.present = current;
@@ -682,8 +646,8 @@ function Battleship() {
 	return app;
 }
 
-var app = Battleship();
-app.init();
+var sim = Simulation();
+sim.init();
 
 // var BATTLE_SERVER_URL = 'https://battleship-vingkan.c9users.io/1v1?p1=esi17.cs.DestroyerShip&p2=esi17.hli109.Floater';// + Math.ceil(Math.random() * 100);
 
