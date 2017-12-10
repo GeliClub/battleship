@@ -152,7 +152,7 @@ function Ship() {
 				// add a path to show movement along the path
 				let debug = document.createElement('a-draw-curve');
 				debug.setAttribute('curveref', '#track');
-				debug.setAttribute('materal', 'shader: line; color: blue;');
+				debug.setAttribute('material', 'shader: line; color: blue;');
 				console.log(debug);
 				doc.appendChild(debug);
 
